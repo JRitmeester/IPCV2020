@@ -1,5 +1,6 @@
 %%
-% HEADER
+% IPCV 2020 - Tongue Tracker Project
+%
 % Ayham Alharbat, Protik Banerji, Jeroen Ritmeester
 %%
 
@@ -23,25 +24,14 @@ imshow(frame);
 % b = temp(1,1,3);
 % c = [r g b];
 
-load c c;
-%%
+load c c; % Contains illuminant data
 
-frameCounter = 100;
-
-% while hasFrame(videoReader)
-%    frame = read(videoReader, frameCounter);
-%    frame = chromadapt(frame,c);
-%    step(videoPlayer, frame);
-%    frameCounter = frameCounter + 1;
-% end
-
-%%
 rect = drawrectangle;
 objectRegion = round(rect.Position);
 points = detectMinEigenFeatures(rgb2gray(frame), 'ROI', objectRegion);
-points = points.Location;
+points = points.Location; % Points of interest in the drawn bounding box
 
-frame = insertShape(frame,'Rectangle',objectRegion,'Color','red');
+% frame = insertShape(frame,'Rectangle',objectRegion,'Color','red');
 frame = insertMarker(frame, points,'+', 'Color', 'green');
 % figure;
 imshow(frame);
@@ -50,12 +40,19 @@ pointTracker = vision.PointTracker('MaxBidirectionalError', 2);
 initialize(pointTracker, points, frame);
 oldPoints = points;
 
-% [img_x, img_y] = size(frame);
-% image_storage = cell(videoReader.NumFrames, img_x*img_y, 3);
-image_counter = 1;
+% Start video from frame 100 and skip every 2 frames
+frameCounter = 100;
+frameOffset = 10;
+
+% Open a videofile
+v = VideoWriter('newfile.avi','Uncompressed AVI');
+v.FrameRate = videoReader.FrameRate/frameOffset;
+open(v);
+
+% Run till you run out of video frames
 while hasFrame(videoReader)
     % get the next frame
-    frame = readFrame(videoReader);
+    frame = read(videoReader, frameCounter);
 
     % Track the points. Note that some points may be lost.
     [points, isFound] = pointTracker(frame);
@@ -69,34 +66,29 @@ while hasFrame(videoReader)
         [xform, oldInliers, visiblePoints] = estimateGeometricTransform(...
             oldInliers, visiblePoints, 'similarity', 'MaxDistance', 4);
 
-        % Apply the transformation to the bounding box points
-%         bboxPoints = transformPointsForward(xform, bboxPoints);
-
-%         % Insert a bounding box around the object being tracked
-%         bboxPolygon = reshape(bboxPoints', 1, []);
-%         frame = insertShape(frame, 'Polygon', bboxPolygon, ...
-%             'LineWidth', 2);
-%
         % Display tracked points
         gFrame = gpuArray(frame);
         color_corected_frame = chrom_adapt(gFrame,c);
 
-        image_storage{image_counter} = insertMarker(gather(color_corected_frame), visiblePoints, '+', ...
+        marked_image = insertMarker(gather(color_corected_frame), visiblePoints, '+', ...
             'Color', 'white');
 
         % Reset the points
         oldPoints = visiblePoints;
         setPoints(pointTracker, oldPoints);
-        %     Display the annotated video frame using the video player object
-        videoPlayer(image_storage{image_counter});
-    end
+        % Display the annotated video frame using the video player object
+        videoPlayer(marked_image);
+        % Write video to file
+        writeVideo(v, marked_image);
 
-image_counter = image_counter + 1;
+        % Increment frame counter by frame offset
+    end
+    frameCounter = frameCounter + frameOffset;
+    % Check to ensure we don't overshoot the end of the video
+    if (frameCounter > videoReader.NumFrames)
+        break;
+    end
 end
-v = VideoWriter('newfile.avi','Uncompressed AVI');
-open(v);
-for index = 1: videoReader.NumFrames - 1
-   writeVideo(v,image_storage{index});
-end
-close();
+close(v);
+
 
