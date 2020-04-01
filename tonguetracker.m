@@ -3,8 +3,11 @@
 % Ayham Alharbat, Protik Banerji, Jeroen Ritmeester
 %%
 
-close all
-clear variables
+% Cleanup and init workspace
+close all;
+clear variables;
+addpath(genpath('.'));
+
 
 videoReader = VideoReader('subjects\subject1\proefpersoon 1.2_M.avi');
 videoPlayer = vision.VideoPlayer;
