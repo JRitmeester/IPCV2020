@@ -74,8 +74,9 @@ while hasFrame(videoReader)
 %             'LineWidth', 2);
 %                 
         % Display tracked points
-%         frame = chromadapt(frame,c);
-        frame = insertMarker(frame, visiblePoints, '+', ...
+        gFrame = gpuArray(frame);
+        color_corected_frame = chrom_adapt(gFrame,c);
+        frame = insertMarker(gather(color_corected_frame), visiblePoints, '+', ...
             'Color', 'white');       
         
         % Reset the points
