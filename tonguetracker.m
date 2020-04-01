@@ -22,7 +22,6 @@ imshow(frame);
 
 load c c;
 %%
-
 frameCounter = 100;
 
 % while hasFrame(videoReader)
