@@ -10,7 +10,7 @@ videoReader = VideoReader('subjects\subject1\proefpersoon 1.2_M.avi');
 videoPlayer = vision.VideoPlayer;
 
 frame = readFrame(videoReader);
-imshow(frame);
+figure(1); imshow(frame);
 %%
 
 % [x,y] = getpts;
@@ -32,7 +32,9 @@ frameCounter = 100;
 % end
 
 %%
+
 rect = drawrectangle;
+
 objectRegion = round(rect.Position);
 points = detectMinEigenFeatures(rgb2gray(frame), 'ROI', objectRegion);
 points = points.Location;
@@ -44,6 +46,8 @@ frame = insertMarker(frame, points,'+', 'Color', 'green');
 pointTracker = vision.PointTracker('MaxBidirectionalError', 2);
 initialize(pointTracker, points, frame);
 oldPoints = points;
+
+close(figure(1));
 
 while hasFrame(videoReader)
     % get the next frame
