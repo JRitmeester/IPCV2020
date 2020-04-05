@@ -15,12 +15,12 @@
 %   addDetections - add detected bounding boxes
 %   track         - track the objects
 
-% Copyright 2013-2014 The MathWorks, Inc 
+% Copyright 2013-2014 The MathWorks, Inc
 
 classdef MultiObjectTrackerKLT < handle
     properties
         % PointTracker A vision.PointTracker object
-        PointTracker; 
+        PointTracker;
         
         % Bboxes M-by-4 matrix of [x y w h] object bounding boxes
         Bboxes = [];
@@ -31,7 +31,7 @@ classdef MultiObjectTrackerKLT < handle
         % Points M-by-2 matrix containing tracked points from all objects
         Points = [];
         
-        % PointIds M-by-1 array containing object id associated with each 
+        % PointIds M-by-1 array containing object id associated with each
         %   point. This array keeps track of which point belongs to which object.
         PointIds = [];
         
@@ -45,19 +45,22 @@ classdef MultiObjectTrackerKLT < handle
     methods
         %------------------------------------------------------------------
         function this = MultiObjectTrackerKLT()
-        % Constructor
+            % Constructor
             this.PointTracker = ...
-                vision.PointTracker('MaxBidirectionalError', 2);
+                vision.PointTracker('MaxBidirectionalError', 2); % default 2
+            %                 vision.PointTracker('MaxBidirectionalError', 5,...
+            %                     'NumPyramidLevels',4);
+            % Ayham Edit
         end
         
         %------------------------------------------------------------------
         function addDetections(this, I, bboxes)
-        % addDetections Add detected bounding boxes.
-        % addDetections(tracker, I, bboxes) adds detected bounding boxes.
-        % tracker is the MultiObjectTrackerKLT object, I is the current
-        % frame, and bboxes is an M-by-4 array of [x y w h] bounding boxes.
-        % This method determines whether a detection belongs to an existing
-        % object, or whether it is a brand new object.
+            % addDetections Add detected bounding boxes.
+            % addDetections(tracker, I, bboxes) adds detected bounding boxes.
+            % tracker is the MultiObjectTrackerKLT object, I is the current
+            % frame, and bboxes is an M-by-4 array of [x y w h] bounding boxes.
+            % This method determines whether a detection belongs to an existing
+            % object, or whether it is a brand new object.
             for i = 1:size(bboxes, 1)
                 % Determine if the detection belongs to one of the existing
                 % objects.
@@ -68,6 +71,16 @@ classdef MultiObjectTrackerKLT < handle
                     this.Bboxes = [this.Bboxes; bboxes(i, :)];
                     points = detectMinEigenFeatures(I, 'ROI', bboxes(i, :));
                     points = points.Location;
+                    % Add random points to track
+                    xMin = bboxes(i,1);
+                    xMax = bboxes(i,1)+bboxes(1,3);
+                    yMin = bboxes(i,2);
+                    yMax = bboxes(i,2)+bboxes(1,4);
+                    addPoints = [];
+                    addPoints = [((xMax-xMin).*rand(100,1) + xMin)'; ...
+                        ((yMax-yMin).*rand(100,1) + yMin)'];
+                    addPoints = addPoints';
+                    points = [points; addPoints];
                     this.BoxIds(end+1) = this.NextId;
                     idx = ones(size(points, 1), 1) * this.NextId;
                     this.PointIds = [this.PointIds; idx];
@@ -90,7 +103,7 @@ classdef MultiObjectTrackerKLT < handle
                     this.BoxIds(end+1) = boxIdx;
                     idx = ones(size(points, 1), 1) * boxIdx;
                     this.PointIds = [this.PointIds; idx];
-                    this.Points = [this.Points; points];                    
+                    this.Points = [this.Points; points];
                     this.BoxScores(end+1) = currentBoxScore + 1;
                 end
             end
@@ -112,40 +125,64 @@ classdef MultiObjectTrackerKLT < handle
                 this.PointTracker.initialize(this.Points, I);
             end
         end
-                
+        
         %------------------------------------------------------------------
-        function track(this, I)
-        % TRACK Track the objects.
-        % TRACK(tracker, I) tracks the objects into frame I. tracker is the
-        % MultiObjectTrackerKLT object, I is the current video frame. This
-        % method updates the points and the object bounding boxes.
+        function [points_out,isFound_out, lost] = track(this, I)
+            % TRACK Track the objects.
+            % TRACK(tracker, I) tracks the objects into frame I. tracker is the
+            % MultiObjectTrackerKLT object, I is the current video frame. This
+            % method updates the points and the object bounding boxes.
+            
+            oldNumberofROI = size(unique(this.PointIds),1);
             [newPoints, isFound] = this.PointTracker.step(I);
             this.Points = newPoints(isFound, :);
             this.PointIds = this.PointIds(isFound);
+            % RANSAC Called
+            %   This is better to be used if some condition is true
+            %   for example: the  boundaries of box surrounding
+            %   the data is bigger than some value
+            RANSACing(this);
+            
             generateNewBoxes(this);
             if ~isempty(this.Points)
-                this.PointTracker.setPoints(this.Points);
+                % this.PointTracker.setPoints(this.Points);
+                % In case of RANSACing use the two lines below
+                % If not RANSACing use the line above
+                this.PointTracker.release;
+                this.PointTracker.initialize(this.Points, I);
+            end
+            
+            points_out = newPoints;
+            isFound_out = isFound;
+            lost = false;
+            if size(this.BoxIds,1) < oldNumberofROI
+                try
+                    error('One ROI is lost.')
+                catch
+                    warning('One ROI is lost. Select Again.')
+                    lost = true;
+                end
             end
         end
-    end
-    
-    methods(Access=private)        
+        %end
+        
+        %methods(Access=private)
         %------------------------------------------------------------------
         function boxIdx = findMatchingBox(this, box)
-        % Determine which tracked object (if any) the new detection belongs to. 
+            % Determine which tracked object (if any) the new detection belongs to.
             boxIdx = [];
             for i = 1:size(this.Bboxes, 1)
-                area = rectint(this.Bboxes(i,:), box);                
-                if area > 0.2 * this.Bboxes(i, 3) * this.Bboxes(i, 4) 
+                area = rectint(this.Bboxes(i,:), box);
+                if area > 0.2 * this.Bboxes(i, 3) * this.Bboxes(i, 4)
                     boxIdx = this.BoxIds(i);
                     return;
                 end
-            end           
+            end
         end
         
         %------------------------------------------------------------------
-        function currentScore = deleteBox(this, boxIdx)            
-        % Delete object.
+        function currentScore = deleteBox(this, boxIdx)
+            % Delete object.
             this.Bboxes(this.BoxIds == boxIdx, :) = [];
             this.Points(this.PointIds == boxIdx, :) = [];
             this.PointIds(this.PointIds == boxIdx) = [];
@@ -156,8 +193,8 @@ classdef MultiObjectTrackerKLT < handle
         end
         
         %------------------------------------------------------------------
-        function generateNewBoxes(this)  
-        % Get bounding boxes for each object from tracked points.
+        function generateNewBoxes(this)
+            % Get bounding boxes for each object from tracked points.
             oldBoxIds = this.BoxIds;
             oldScores = this.BoxScores;
             this.BoxIds = unique(this.PointIds);
@@ -170,7 +207,36 @@ classdef MultiObjectTrackerKLT < handle
                 this.Bboxes(i, :) = newBox;
                 this.BoxScores(i) = oldScores(oldBoxIds == this.BoxIds(i));
             end
-        end 
+        end
+        
+        %------------------------------------------------------------------
+        function RANSACing(this)
+            allPoints = (this.Points);
+            allIds = (this.PointIds);
+            ROInum = (unique(this.PointIds))';
+            pointsOut = [];
+            pointIDsOut = [];
+            for i = ROInum
+                pointsIn = [];
+                pointsIn(:,:) = allPoints(allIds == i, :);
+                pointsIn = pointsIn';
+                if size(pointsIn,2) >= 11   
+                    [M, inliers, ntrial] = ut_ransac(pointsIn,... 
+                        @est_mu_cov, 10, @distest, 15,...
+                        @consistencycheck, 0.6);
+                    pointsOut = [pointsOut;(pointsIn(:,inliers))'];
+                    idx = ones(size(pointsIn(:,inliers), 2), 1) * i;
+                    pointIDsOut = [pointIDsOut; idx];
+                
+                else
+                    pointsOut = [pointsOut;(pointsIn)'];
+                    idx = ones(size(pointsIn, 2), 1) * i;
+                    pointIDsOut = [pointIDsOut; idx];
+                end
+            end
+            this.Points = pointsOut;
+            this.PointIds = pointIDsOut;
+        end
     end
 end
 

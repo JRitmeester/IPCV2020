@@ -1,12 +1,23 @@
 %% Track Multi Objects
 
-clear classes;
+clear 
 close all
 clc
+% Required Files Structure Here:
+% Matlab Dir:   -> Videos       -> subject1/ ...
+%                               -> subject2/ ..
+%                                  ...
+%               -> testRANSAC   -> files of RANSAC 
+%           (consistencycheck.m, distest.m, est_mu_cov.m, ut_ransac.m)
+%               
+%               -> MultiObjects.m
+%               -> MultiObjectTrackerKLT.m
+mkdir('TestRANSAC')
+addpath (genpath('TestRANSAC'))
 %% Instantiate video, and KLT object tracker
 
 % The Video name make sure that you have the video in the directory
-fname = 'subject1/proefpersoon 1.2_M.avi';
+fname = 'Videos/subject1/proefpersoon 1.2_M.avi';
 % Start from second 2
 vidReader = VideoReader(fname,'CurrentTime',2);
 tracker = MultiObjectTrackerKLT; % Tracking Obj
@@ -28,6 +39,7 @@ end
 
 frameGray = rgb2gray(frame);
 tracker.addDetections(frameGray, bboxes);
+
 %% And loop until the player is closed
 frameNumber = 0;
 disp('Press Ctrl-C to exit...');
@@ -39,39 +51,27 @@ while hasFrame(vidReader)
     frame = rgb2gray(framergb);
     frame = imsharpen(frame);
     % Track the points using KLT
-    [points_out, pFound] = tracker.track(frame);
-    
-    %   Detect when one region is completly lost
-    try
-        if size(tracker.BoxIds)<nOfROI
-            error('One ROI is lost.')
-        end
-    catch exception
-        warning('One ROI is lost. Select Again.')
+    [points_out, pFound, lost] = tracker.track(frame);
+    % Did we lose any ROI?
+    if lost
         [framergb,tracker,finished] = selectAgain(tracker, vidReader);
+        % Is the video finished
         if finished==1
             break
         end
     end
-    
-    % Display bounding boxes and tracked points.
+    % Display the frame with bounding boxes and tracked points.
     displayFrame = insertObjectAnnotation(framergb, 'rectangle',...
         tracker.Bboxes, tracker.BoxIds);
     displayFrame = insertMarker(displayFrame, tracker.Points);
     videoPlayer.step(displayFrame);
     
-    %   We can skip frames
-    %     iskip = 1;
-    %     while hasFrame(vidReader)
-    %         frameRGB = readFrame(vidReader);
-    %         iskip = iskip+1;
-    %         if iskip>2, break; end
-    %     end
-    
     frameNumber = frameNumber + 1;
 end
 %% Clean up
 release(videoPlayer);
+
+
 
 %% Functions
 
@@ -90,7 +90,7 @@ end
 %   Save the existing ROIs
 bboxes = trackObj.Bboxes;
 %   Delete the old tracker
-%release(trackObj);
+delete(trackObj);
 %   Initiate new tracker Obj
 trackerNew = MultiObjectTrackerKLT;
 %   Read new frame
@@ -99,6 +99,7 @@ try  % check if the video is finished
 catch
     warning('The video is finished')
     %   Flag the video is finished
+    frame = temp;
     finished = 1;
     return;
 end
@@ -123,3 +124,10 @@ end
 %         [points_out, pFound] = tracker.track(frame);
 %     end
 %
+%   We can skip frames
+%     iskip = 1;
+%     while hasFrame(vidReader)
+%         frameRGB = readFrame(vidReader);
+%         iskip = iskip+1;
+%         if iskip>2, break; end
+%     end
