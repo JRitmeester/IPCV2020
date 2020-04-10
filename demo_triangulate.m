@@ -15,26 +15,64 @@ frameL = readFrame(videoReaderL);
 frameM = undistortImage(frameM,stereoParams.CameraParameters1);
 frameL = undistortImage(frameL,stereoParams.CameraParameters2);
 
+%%
 % Manually selected a point to track on both sides
-figure(1); 
+colors = ['r', 'g', 'b', 'y', 'm'];
 
-imshow(frameL);
-point = drawpoint;
-ptL = point.Position(:);
+figure(1);  imshow(frameL);
+figure(2);  imshow(frameM);
 
-imshow(frameM);
-point = drawpoint;
-ptM = point.Position(:);
+% for n = 1:5
+% imshow(frameL);
+% point = drawpoint;
+% pt(n,:,1) = point.Position(:);
+% 
+% imshow(frameM);
+% point = drawpoint;
+% pt(n,:,2) = point.Position(:);
+% 
+% end
 
-point3d = triangulate(ptL', ptM', stereoParams);
+%%
+load Paths_xy
+% pt(tracker_number, coordinate (x or y), image_number (L or M))
+pt(:,1,1) = averageX(:,1);
+pt(:,1,2) = averageX(:,2);
+pt(:,2,1) = averageY(:,1);
+pt(:,2,2) = averageY(:,2);
+[length, ~, ~] = size(pt); % Amount of points.
+% 
+% for image = 1:2
+%     for index = 1:length
+%         figure(image);
+%         hold on
+%         scatter(pt(index,1,image), pt(index,2,image), colors(index));
+%         hold off
+%     end
+% end
 
-% Try to visualise what is going on...
-camera1world = [0, 0, 0];
-camera2world = stereoParams.TranslationOfCamera2;
-p = [camera1world; camera2world; point3d];
+%%
+figure(3);
+points3d(:,:) = triangulate(pt(:,:,1), pt(:,:,2), stereoParams);
 
-scatter3(p(:,1),p(:,2),p(:,3),'r'); % plot3(X's, Y's, Z's)
-set(gca, 'Projection', 'Perspective');
-text(p(1,1), p(1,2), p(1,3), 'Left camera');
-text(p(2,1), p(2,2), p(2,3), 'Middle camera');
-text(p(3,1), p(3,2), p(3,3), 'Selected point'); % Millimeters
+% TODO: Verify how cameras were calibrated.
+
+cameraMiddle = [0, 0, 0];
+cameraLeft = stereoParams.TranslationOfCamera2;
+
+% set(gca, 'Projection', 'Perspective');
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+% xlim([-180 20])
+% ylim([-180 20])
+
+hold on
+scatter3(points3d(:,1), points3d(:,2), points3d(:,3), 'r+');
+
+scatter3(0, 0, 0, 'b')
+text(0,0,0, 'Middle camera');
+
+scatter3(cameraLeft(1), cameraLeft(2), cameraLeft(3), 'b');
+text(cameraLeft(1), cameraLeft(2), cameraLeft(3), 'Left camera');
+hold off
