@@ -14,7 +14,8 @@
 % MultiObjectTrackerKLT methods:
 %   addDetections - add detected bounding boxes
 %   track         - track the objects
-
+%   Added:
+%   RANSACing     - find and eleminate outliers
 % Copyright 2013-2014 The MathWorks, Inc
 
 classdef MultiObjectTrackerKLT < handle
@@ -48,9 +49,6 @@ classdef MultiObjectTrackerKLT < handle
             % Constructor
             this.PointTracker = ...
                 vision.PointTracker('MaxBidirectionalError', 2); % default 2
-            %                 vision.PointTracker('MaxBidirectionalError', 5,...
-            %                     'NumPyramidLevels',4);
-            % Ayham Edit
         end
         
         %------------------------------------------------------------------
@@ -127,7 +125,7 @@ classdef MultiObjectTrackerKLT < handle
         end
         
         %------------------------------------------------------------------
-        function [points_out,isFound_out, lost] = track(this, I)
+        function [points_out,pointsIds, lost] = track(this, I)
             % TRACK Track the objects.
             % TRACK(tracker, I) tracks the objects into frame I. tracker is the
             % MultiObjectTrackerKLT object, I is the current video frame. This
@@ -152,8 +150,8 @@ classdef MultiObjectTrackerKLT < handle
                 this.PointTracker.initialize(this.Points, I);
             end
             
-            points_out = newPoints;
-            isFound_out = isFound;
+            points_out = this.Points;
+            pointsIds = this.PointIds;
             lost = false;
             if size(this.BoxIds,1) < oldNumberofROI
                 try
@@ -164,12 +162,11 @@ classdef MultiObjectTrackerKLT < handle
                 end
             end
         end
-        %end
         
-        %methods(Access=private)
         %------------------------------------------------------------------
         function boxIdx = findMatchingBox(this, box)
-            % Determine which tracked object (if any) the new detection belongs to.
+            % Determine which tracked object (if any) the new detection
+            % belongs to.
             boxIdx = [];
             for i = 1:size(this.Bboxes, 1)
                 area = rectint(this.Bboxes(i,:), box);
@@ -211,6 +208,7 @@ classdef MultiObjectTrackerKLT < handle
         
         %------------------------------------------------------------------
         function RANSACing(this)
+            % This method eleminates the outliers in each ROI
             allPoints = (this.Points);
             allIds = (this.PointIds);
             ROInum = (unique(this.PointIds))';
@@ -220,14 +218,14 @@ classdef MultiObjectTrackerKLT < handle
                 pointsIn = [];
                 pointsIn(:,:) = allPoints(allIds == i, :);
                 pointsIn = pointsIn';
-                if size(pointsIn,2) >= 11   
-                    [M, inliers, ntrial] = ut_ransac(pointsIn,... 
+                if size(pointsIn,2) >= 11
+                    [M, inliers, ntrial] = ut_ransac(pointsIn,...
                         @est_mu_cov, 10, @distest, 15,...
                         @consistencycheck, 0.6);
                     pointsOut = [pointsOut;(pointsIn(:,inliers))'];
                     idx = ones(size(pointsIn(:,inliers), 2), 1) * i;
                     pointIDsOut = [pointIDsOut; idx];
-                
+                    
                 else
                     pointsOut = [pointsOut;(pointsIn)'];
                     idx = ones(size(pointsIn, 2), 1) * i;
@@ -236,6 +234,11 @@ classdef MultiObjectTrackerKLT < handle
             end
             this.Points = pointsOut;
             this.PointIds = pointIDsOut;
+        end
+        %------------------------------------------------------------------
+        function repopulate(this)
+            % This method will add points to track when the number of
+            % points tracker becomes low
         end
     end
 end

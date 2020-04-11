@@ -7,7 +7,7 @@ clc
 % Matlab Dir:   -> Videos       -> subject1/ ...
 %                               -> subject2/ ..
 %                                  ...
-%               -> testRANSAC   -> files of RANSAC 
+%               -> TestRANSAC   -> files of RANSAC 
 %           (consistencycheck.m, distest.m, est_mu_cov.m, ut_ransac.m)
 %               
 %               -> MultiObjects.m
@@ -17,9 +17,9 @@ addpath (genpath('TestRANSAC'))
 %% Instantiate video, and KLT object tracker
 
 % The Video name make sure that you have the video in the directory
-fname = 'Videos/subject1/proefpersoon 1.2_M.avi';
-% Start from second 2
-vidReader = VideoReader(fname,'CurrentTime',2);
+fname = 'Videos/subject1/proefpersoon 1.2_R.avi';
+% Start from which second 2 & 8.4
+vidReader = VideoReader(fname,'CurrentTime',8.4);
 tracker = MultiObjectTrackerKLT; % Tracking Obj
 % Get a frame for frame-size information
 frame = readFrame(vidReader);
@@ -41,25 +41,35 @@ frameGray = rgb2gray(frame);
 tracker.addDetections(frameGray, bboxes);
 
 %% And loop until the player is closed
-frameNumber = 0;
+frameNumber = 1;
 disp('Press Ctrl-C to exit...');
 
 while hasFrame(vidReader)
     
     % Convert to grayscale (required by the detectMinEigenFeatures)
     framergb = readFrame(vidReader);
+%     framergb = undistortedImage(framergb,);
     frame = rgb2gray(framergb);
     frame = imsharpen(frame);
     % Track the points using KLT
-    [points_out, pFound, lost] = tracker.track(frame);
+    [points_out, IDs, lost] = tracker.track(frame);
+    % The x,y location of the tongue and reference points
     % Did we lose any ROI?
     if lost
         [framergb,tracker,finished] = selectAgain(tracker, vidReader);
+        points_out = tracker.Points;
+        IDs = tracker.PointIds;
         % Is the video finished
         if finished==1
             break
         end
     end
+    [av, med, IDx] = getAverageX(points_out, IDs);
+    averageX(frameNumber, :) = av;
+    medianX(frameNumber, :) = med;
+    [av, med, IDy] = getAverageY(points_out, IDs);
+    averageY(frameNumber, :) = av;
+    medianY(frameNumber, :) = med;
     % Display the frame with bounding boxes and tracked points.
     displayFrame = insertObjectAnnotation(framergb, 'rectangle',...
         tracker.Bboxes, tracker.BoxIds);
@@ -71,8 +81,10 @@ end
 %% Clean up
 release(videoPlayer);
 
-
-
+figure; imshow(framergb);
+hold on
+scatter(averageX(:,2),averageY(:,2))
+scatter(averageX(:,1),averageY(:,1))
 %% Functions
 
 function [frame,trackerNew,finished] = selectAgain(trackObj, VidObj)
@@ -113,21 +125,28 @@ trackerNew.addDetections(frameGray, bboxes);
 finished = 0;
 end
 
-% From there To Redetect
-%     if mod(frameNumber, 2) == 0
-%         % (Re)detect.
-%         if ~isempty(tracker.Bboxes)
-%             tracker.addDetections(frame, tracker.Bboxes);
-%         end
-%     else
-%         % Track
-%         [points_out, pFound] = tracker.track(frame);
-%     end
-%
-%   We can skip frames
-%     iskip = 1;
-%     while hasFrame(vidReader)
-%         frameRGB = readFrame(vidReader);
-%         iskip = iskip+1;
-%         if iskip>2, break; end
-%     end
+function [averageX, medianX, IDx] = getAverageX(points, IDs)
+    averageX = [];
+    medianX = [];
+    IDx = [];
+    for i = unique(IDs)'
+        xPositions = [];
+        xPositions = points((IDs == i),1);
+        averageX = [averageX, mean(xPositions)];
+        medianX = [medianX, median(xPositions)];
+        IDx = [IDx i];
+    end
+end
+
+function [averageY, medianY, IDy] = getAverageY(points, IDs)
+    averageY = [];
+    medianY = [];
+    IDy = [];
+    for i = unique(IDs)'
+        yPositions = [];
+        yPositions = points((IDs == i),2);
+        averageY = [averageY, mean(yPositions)];
+        medianY = [medianY, median(yPositions)];
+        IDy = [IDy i];
+    end
+end
