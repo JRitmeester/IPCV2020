@@ -34,13 +34,13 @@ figure(2);  imshow(frameM);
 % end
 
 %%
-load Paths_xy
+
 % pt(tracker_number, coordinate (x or y), image_number (L or M))
-pt(:,1,1) = averageX(:,1);
-pt(:,1,2) = averageX(:,2);
-pt(:,2,1) = averageY(:,1);
-pt(:,2,2) = averageY(:,2);
-[length, ~, ~] = size(pt); % Amount of points.
+load path_tongue_left
+load path_tongue_middle
+
+path1 = path_tongue_left;
+path2 = path_tongue_middle;
 % 
 % for image = 1:2
 %     for index = 1:length
@@ -53,19 +53,22 @@ pt(:,2,2) = averageY(:,2);
 
 %%
 figure(3);
-points3d(:,:) = triangulate(pt(:,:,1), pt(:,:,2), stereoParams);
+points3d(:,:) = triangulate(path1(:,:), path2(1:519,:), stereoParams);
 
 % TODO: Verify how cameras were calibrated.
 
 cameraMiddle = [0, 0, 0];
 cameraLeft = stereoParams.TranslationOfCamera2;
 
-% set(gca, 'Projection', 'Perspective');
+points3d = points3d - cameraLeft;
+
+set(gca, 'Projection', 'Perspective');
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
-% xlim([-180 20])
-% ylim([-180 20])
+xlim([-180 200])
+ylim([-180 200])
+zlim([0 700])
 
 hold on
 scatter3(points3d(:,1), points3d(:,2), points3d(:,3), 'r+');
