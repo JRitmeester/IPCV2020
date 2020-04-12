@@ -21,20 +21,21 @@ title("Path 2");
 
 % Plot 3D points
 figure;
-scatter3(points3d(:,1), points3d(:,2), points3d(:,3), 'r.', 'LineWidth', 1);
+scatter3(points3d(:,1), points3d(:,2), points3d(:,3), 'black.', 'LineWidth', 1);
 set(gca, 'YDir','reverse')
+set(gca, 'XDir','reverse')
 title("Reconstructed 3D path");
 % Show cameras in plot
 hold on
 cam1 = plotCamera('Location',camera1Position,'Orientation',eye(3),'Opacity',0, 'Size', 10);
 cam2 = plotCamera('Location', camera2Position,...
-    'Orientation',R,'Opacity',0, 'Size', 10);
+    'Orientation',R,'Opacity',0, 'Size', 10, 'Color', 'b');
 
 hold off
 set(gca, 'Projection', 'Perspective');
-xlabel('X')
-ylabel('Y')
-zlabel('Z')
+xlabel('X (Millimeteres)')
+ylabel('Y (Millimeteres)')
+zlabel('Z (Millimeteres)')
 axis equal
-view (180,-90)
+view (180,-82)
 end
