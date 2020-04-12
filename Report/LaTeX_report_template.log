@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.2.11)  6 APR 2020 00:16
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.2.11)  12 APR 2020 03:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -218,7 +218,24 @@ Package caption Info: listings package is loaded.
 \c@lotdepth=\count109
 \sf@top=\skip50
 \sf@bottom=\skip51
-) (/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf.sty
+) (/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+)
+\Gin@req@height=\dimen131
+\Gin@req@width=\dimen132
+)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf.sty
 Package: epstopdf 2016/05/15 v2.6 Conversion with epstopdf on the fly (HO)
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
@@ -257,26 +274,17 @@ Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
 )
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
 
-Package epstopdf Warning: No graphics package `graphic{s,x}' loaded.
-
-)) (/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/graphicx.sty
-Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
-
-(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/graphics.sty
-Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
-
-(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty
-Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
-)
-(/usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
-File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
-)
-Package graphics Info: Driver file: pdftex.def on input line 99.
-)
-\Gin@req@height=\dimen131
-\Gin@req@width=\dimen132
-)
+(/usr/local/texlive/2019/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+)))
 (/usr/local/texlive/2019/texmf-dist/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2018/11/30 v6.88e Hypertext links for LaTeX
 
@@ -434,68 +442,70 @@ LaTeX Info: Redefining \nameref on input line 414.
 \@outlinefile=\write3
 \openout3 = `LaTeX_report_template.out'.
 
-
-Underfull \hbox (badness 3068) in paragraph at lines 561--562
-[]\OT1/ptm/m/n/10 Next, de-fine the sub-tasks in more de-tail. For each
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 561--562
-\OT1/ptm/m/n/10 and pseudo-code ex-am-ples pro-vided in
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 561--562
-[]\OT1/ptm/m/n/10 https://en.wikipedia.org/wiki/Category:Articles[]with[]exampl
-e
- []
-
-[1{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
-
-
-]
+<figures/Select2ROI.jpg, id=65, 1244.65pt x 1158.3275pt>
+File: figures/Select2ROI.jpg Graphic file (type jpg)
+<use figures/Select2ROI.jpg>
+Package pdftex.def Info: figures/Select2ROI.jpg  used on input line 559.
+(pdftex.def)             Requested size: 108.405pt x 100.8868pt.
+<figures/Select3ROI.jpg, id=66, 1244.65pt x 1158.3275pt>
+File: figures/Select3ROI.jpg Graphic file (type jpg)
+<use figures/Select3ROI.jpg>
+Package pdftex.def Info: figures/Select3ROI.jpg  used on input line 561.
+(pdftex.def)             Requested size: 108.405pt x 100.8868pt.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 584.
+(Font)              <7> on input line 565.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 584.
+(Font)              <5> on input line 565.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 565.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 565.
+<figures/2ROIwithPoints.png, id=69, 512.91624pt x 513.92pt>
+File: figures/2ROIwithPoints.png Graphic file (type png)
+<use figures/2ROIwithPoints.png>
+Package pdftex.def Info: figures/2ROIwithPoints.png  used on input line 570.
+(pdftex.def)             Requested size: 104.81834pt x 105.01707pt.
+ [1{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+
+ <./figures/Select2ROI.jpg> <./figures/Select3ROI.jpg> <./figures/2ROIwithPoint
+s.png>]
 <examples.png, id=90, 398.4486pt x 228.25275pt>
 File: examples.png Graphic file (type png)
 <use examples.png>
-Package pdftex.def Info: examples.png  used on input line 616.
+Package pdftex.def Info: examples.png  used on input line 629.
 (pdftex.def)             Requested size: 180.67424pt x 101.17683pt.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2019/02/27 1.8b listings language file
 )
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 726.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 739.
 
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-(./convertvideo.m)
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 770.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 770.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 818.
- [2 <./examples.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 818.
+(./convertvideo.m [2 <./examples.png>])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 831.
+ [3
+
+]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 831.
  (./LaTeX_report_template.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 818.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 818.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 831.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 831.
 Package rerunfilecheck Info: File `LaTeX_report_template.out' has not changed.
-(rerunfilecheck)             Checksum: 155DE27282F5E06C6B5DCA15F015788A;1069.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 818.
+(rerunfilecheck)             Checksum: 4CCF6322753F5AEA70EB32EA18EDDF38;941.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 831.
  ) 
 Here is how much of TeX's memory you used:
- 9920 strings out of 492616
- 149411 string characters out of 6129481
- 517726 words of memory out of 5000000
- 13661 multiletter control sequences out of 15000+600000
- 45179 words of font info for 84 fonts, out of 8000000 for 9000
+ 10020 strings out of 492616
+ 151205 string characters out of 6129481
+ 540575 words of memory out of 5000000
+ 13749 multiletter control sequences out of 15000+600000
+ 45657 words of font info for 85 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
- 44i,9n,42p,928b,2165s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 44i,11n,49p,628b,2440s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/tex
@@ -509,10 +519,10 @@ st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/t
 ype1/urw/times/utmbi8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/
 times/utmr8a.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/times/utmr
 i8a.pfb>
-Output written on LaTeX_report_template.pdf (2 pages, 389453 bytes).
+Output written on LaTeX_report_template.pdf (3 pages, 1613439 bytes).
 PDF statistics:
- 210 PDF objects out of 1000 (max. 8388607)
- 190 compressed objects within 2 object streams
- 70 named destinations out of 1000 (max. 500000)
- 142 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 217 PDF objects out of 1000 (max. 8388607)
+ 192 compressed objects within 2 object streams
+ 74 named destinations out of 1000 (max. 500000)
+ 141 words of extra memory for PDF output out of 10000 (max. 10000000)
 

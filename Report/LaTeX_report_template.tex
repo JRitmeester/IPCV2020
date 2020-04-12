@@ -131,15 +131,15 @@
 %\usepackage{amsfonts}
  \usepackage{subfig}
 %\usepackage{subcaption}
-%\usepackage[pdftex]{graphicx}
+\usepackage[pdftex]{graphicx}
   \usepackage{epstopdf}
    \ifpdf
   \usepackage[pdftex]{graphicx}
-  \graphicspath{images/}
-  \DeclareGraphicsExtensions{.pdf,.jep,.png}
+  \graphicspath{figures/}
+  \DeclareGraphicsExtensions{.pdf,.jep,.png,.jpg}
  \else
   \usepackage[dvips]{graphicx}
-  \graphicspath{images/}
+  \graphicspath{figures/}
   \DeclareGraphicsExtensions{.eps}
  \fi
 
@@ -543,23 +543,36 @@ To measure the range of motion, patients are asked to move their tongue to stand
 
 A brief introduction to the topic is presented first, then the methodology which involves the three main topics (2D tracking, 3D tracking, and 3D measurements) is presented, then the results of the experiments will be presented and discussed.
 
-The introduction contains (1) a background, (2) the definition of the problem that is addressed possibly with a research question and subquestions, (3) a short outline of the report.
 
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
-\section{Methods and Materials}
-
-\subsection{Materials}
-A short inventory of what has been used.
-
+\section{METHODOLOGY}
+In this section, we will present the workflow of our system, from calibrating the cameras to get the camera parameters, selecting and tracking Region Of Interest ROI, triangulating the tracked path of the ROIs to get the 3D positions of these ROIs, until we end up with a Range of Motion for the tongue tip with respect to a coordinate system that is fixed on the face.
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
-\subsection{Methods}
-\subsubsection{Analysis}
-Start with defining the overview of the problem in a more mathematical context. What is the input? What is the desired output? (Introduce mathematical symbols for the input and output variables). What is in rough steps the strategy to get the output from the input?
+\subsection{2D Tracking}
+For our final purpose, measuring the Range of Motion for the tongue tip, we need at least 1 point that is fixed on the face to work as an origin to our coordinate system that is fixed on the face. Therefore, the tongue tip and another point will be tracked in 2D.
+To track these points we start by selecting a small ROI around these two points as shown in Fig. \ref{select2ROI}.
+\begin{figure}[!t]
+	\centering
+\subfloat[Two ROIs]{\includegraphics[width=1.5in]{figures/Select2ROI.jpg}%
+\label{fig_first_case}}
+\subfloat[Three ROIs]{\includegraphics[width=1.5in]{figures/Select3ROI.jpg}%
+\label{fig_second_case}}
+\caption{Selecting ROIs: two ROIs are selected in (a) and three ROIs in (b)}
+\label{select2ROI}
+\end{figure}
+ After selecting those ROIs, the minimum eigenvalue algorithm\footnote{This algorithm was chosen after simply comparing the number of points it can detect against other corner detectors that are available on Matlab like Harris–Stephens, BRISK and FAST algorithms.} is used to detect corners within the ROI and define them as interest points to track.
  
-Next, define the subtasks in more detail. For each subtask, introduce variables whenever needed, and set-up the mathematical relations (equations) between these variables, possibly combined with pseudo code.  Do \textbf{no}t use Matlab code. Describe your algorithm such that the principle of operation becomes clear. For that, use mathematical style pseudo code. See: \href{https://en.wikipedia.org/wiki/Pseudocode\#https://en.wikipedia.org/wiki/Pseudocode}{https://en.wikipedia.org/wiki/Pseudocode} and pseudo-code examples provided in \href{https://en.wikipedia.org/wiki/Category:Articles_with_example_pseudocode\#https://en.wikipedia.org/wiki/Category:Articles_with_example_pseudocode}{https://en.wikipedia.org/wiki/Category:Articles\_with\_example \_pseudocode}. The only place in the report that contains Matlab code is the appendix (you should add your listing as an annex).
-\subsubsection{Performance evaluation}
+ However, the ROIs are relatively small and there is a very limited number of interest points that can be found using this algorithm. And because large displacements are expected at the tongue tip we will definitely lose many points along the way, random points inside the ROIs will be selected and also tracked to increase the overall number of the points that are tracked in each ROI as shown in Fig. \ref{2ROIwithPoints}. This set of points will be tracked using the Kanade-Lucas-Tomasi (KLT) tracking algorithm.
+ \begin{figure}[!t]
+ 	\centering
+ 	\includegraphics[width=0.2\textwidth]{figures/2ROIwithPoints.png}
+ 	\caption{Two selected ROI with the selected points inside them}
+ 	\label{2ROIwithPoints}
+ \end{figure}
+
+\subsubsection{Kanade-Lucas-Tomasi Tracker}
 For a performance evaluation, you often need to set-up an experiment. Describe the (protocol of the) experiment. Describe how the outcome of the experiment will be processed. Often, you need reference values, i.e. a gold standard, or a ground truth. Describe how this is achieved. If the processing is done statistically, mention the statistical test or statistical inference method.
 \section{Results}
 Here, you give the results of what is described in Section II: tables, images and/or graphs. The accompanying text of these tables, images and/or graphs clarifies how they are related to the methods described in Section II.
