@@ -2,8 +2,9 @@ function create3DPath(path1, path2, stereoParams)
 % TODO: Verify how cameras were calibrated.
 % Get camera coordinates
 camera1Position = [0, 0, 0];
-camera2Position = stereoParams.TranslationOfCamera2;
+camera2Position = -stereoParams.TranslationOfCamera2;
 R= stereoParams.RotationOfCamera2;
+R = R';
 
 % Prevent errors due to different length paths
 maxElement = min(size(path1, 1), size(path2,1));
@@ -27,9 +28,10 @@ set(gca, 'XDir','reverse')
 title("Reconstructed 3D path");
 % Show cameras in plot
 hold on
-cam1 = plotCamera('Location',camera1Position,'Orientation',eye(3),'Opacity',0, 'Size', 10);
+cam1 = plotCamera('Location',camera1Position,'Orientation',eye(3),...
+    'Opacity',0, 'Size', 10, 'Color', 'b');
 cam2 = plotCamera('Location', camera2Position,...
-    'Orientation',R,'Opacity',0, 'Size', 10, 'Color', 'b');
+    'Orientation',R,'Opacity',0, 'Size', 10, 'Color', 'r');
 
 hold off
 set(gca, 'Projection', 'Perspective');
