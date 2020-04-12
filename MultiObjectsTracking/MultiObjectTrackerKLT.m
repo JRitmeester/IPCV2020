@@ -41,6 +41,7 @@ classdef MultiObjectTrackerKLT < handle
         
         % BoxScores M-by-1 array. Low box score means that we probably lost the object.
         BoxScores = [];
+        counter = 1;
     end
     
     methods
@@ -125,7 +126,7 @@ classdef MultiObjectTrackerKLT < handle
         end
         
         %------------------------------------------------------------------
-        function [points_out,pointsIds, lost] = track(this, I)
+        function [estimated,points_out,pointsIds, lost] = track(this, I)
             % TRACK Track the objects.
             % TRACK(tracker, I) tracks the objects into frame I. tracker is the
             % MultiObjectTrackerKLT object, I is the current video frame. This
@@ -139,12 +140,12 @@ classdef MultiObjectTrackerKLT < handle
             %   This is better to be used if some condition is true
             %   for example: the  boundaries of box surrounding
             %   the data is bigger than some value
-            RANSACing(this);
+            estimated = RANSACing(this);
             
             generateNewBoxes(this);
             if ~isempty(this.Points)
                 % this.PointTracker.setPoints(this.Points);
-                % In case of RANSACing use the two lines below
+                % In case of using RANSACing use the two lines below
                 % If not RANSACing use the line above
                 this.PointTracker.release;
                 this.PointTracker.initialize(this.Points, I);
@@ -161,6 +162,7 @@ classdef MultiObjectTrackerKLT < handle
                     lost = true;
                 end
             end
+            this.counter = this.counter +1;
         end
         
         %------------------------------------------------------------------
@@ -207,11 +209,12 @@ classdef MultiObjectTrackerKLT < handle
         end
         
         %------------------------------------------------------------------
-        function RANSACing(this)
+        function EstimatedXY = RANSACing(this)
             % This method eleminates the outliers in each ROI
             allPoints = (this.Points);
             allIds = (this.PointIds);
             ROInum = (unique(this.PointIds))';
+            EstimatedXY = [];
             pointsOut = [];
             pointIDsOut = [];
             for i = ROInum
@@ -222,8 +225,16 @@ classdef MultiObjectTrackerKLT < handle
                     [M, inliers, ntrial] = ut_ransac(pointsIn,...
                         @est_mu_cov, 10, @distest, 15,...
                         @consistencycheck, 0.6);
-                    pointsOut = [pointsOut;(pointsIn(:,inliers))'];
-                    idx = ones(size(pointsIn(:,inliers), 2), 1) * i;
+                    EstimatedXY(i,1) = M(1,1);
+                    EstimatedXY(i,2) = M(2,1);
+                    validPoints = (pointsIn(:,inliers))'; %added this and replaced it to pointsOut next line
+                    if (mod(this.counter, 50) == 0)
+                        if validPoints<40
+                            validPoints = repopulate(validPoints,this); %comment this to not repopulate
+                        end
+                    end
+                    pointsOut = [pointsOut;validPoints];
+                    idx = ones(size(validPoints, 1), 1) * i;
                     pointIDsOut = [pointIDsOut; idx];
                     
                 else
@@ -236,9 +247,26 @@ classdef MultiObjectTrackerKLT < handle
             this.PointIds = pointIDsOut;
         end
         %------------------------------------------------------------------
-        function repopulate(this)
+        function validPointsOut = repopulate(validPointsIn,this)
             % This method will add points to track when the number of
             % points tracker becomes low
+            xMin = min(validPointsIn(:, 1));
+            yMin = min(validPointsIn(:, 2));
+            xMax = max(validPointsIn(:, 1));
+            yMax = max(validPointsIn(:, 2));
+            addPoints = [];
+            try
+            addPoints = [((xMax-xMin).*rand(10,1) + xMin)'; ...
+                ((yMax-yMin).*rand(10,1) + yMin)'];
+            catch
+                xMax
+                xMin
+                yMax
+                yMin
+                size (validPointsIn)
+            end
+            addPoints = addPoints';
+            validPointsOut = [validPointsIn; addPoints];
         end
     end
 end

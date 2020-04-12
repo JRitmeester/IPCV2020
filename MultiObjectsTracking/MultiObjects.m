@@ -17,9 +17,9 @@ addpath (genpath('TestRANSAC'))
 %% Instantiate video, and KLT object tracker
 
 % The Video name make sure that you have the video in the directory
-fname = 'Videos/subject1/proefpersoon 1.2_R.avi';
+fname = 'Videos/subject1/proefpersoon 1.2_M.avi';
 % Start from which second 2 & 8.4
-vidReader = VideoReader(fname,'CurrentTime',8.4);
+vidReader = VideoReader(fname,'CurrentTime',2.1);
 tracker = MultiObjectTrackerKLT; % Tracking Obj
 % Get a frame for frame-size information
 frame = readFrame(vidReader);
@@ -43,16 +43,16 @@ tracker.addDetections(frameGray, bboxes);
 %% And loop until the player is closed
 frameNumber = 1;
 disp('Press Ctrl-C to exit...');
-
+estimatedPath = [];
 while hasFrame(vidReader)
-    
+    estimated = [];
     % Convert to grayscale (required by the detectMinEigenFeatures)
     framergb = readFrame(vidReader);
 %     framergb = undistortedImage(framergb,);
     frame = rgb2gray(framergb);
     frame = imsharpen(frame);
     % Track the points using KLT
-    [points_out, IDs, lost] = tracker.track(frame);
+    [estimated, points_out, IDs, lost] = tracker.track(frame);
     % The x,y location of the tongue and reference points
     % Did we lose any ROI?
     if lost
@@ -64,18 +64,21 @@ while hasFrame(vidReader)
             break
         end
     end
+    % Estimate the XY with the Average and Median
     [av, med, IDx] = getAverageX(points_out, IDs);
     averageX(frameNumber, :) = av;
     medianX(frameNumber, :) = med;
     [av, med, IDy] = getAverageY(points_out, IDs);
     averageY(frameNumber, :) = av;
     medianY(frameNumber, :) = med;
+    % Store the estimated XY with RANSAC
+    estimatedPath = [estimatedPath; estimated];
+    
     % Display the frame with bounding boxes and tracked points.
     displayFrame = insertObjectAnnotation(framergb, 'rectangle',...
         tracker.Bboxes, tracker.BoxIds);
     displayFrame = insertMarker(displayFrame, tracker.Points);
     videoPlayer.step(displayFrame);
-    
     frameNumber = frameNumber + 1;
 end
 %% Clean up
