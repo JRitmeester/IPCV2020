@@ -1,15 +1,19 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{METHODOLOGY}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{2D Tracking}{section.2}% 3
-\BOOKMARK [3][-]{subsubsection.2.1.1}{Kanade-Lucas-Tomasi Tracker}{subsection.2.1}% 4
-\BOOKMARK [1][-]{section.3}{Results}{}% 5
-\BOOKMARK [1][-]{section.4}{Discussion}{}% 6
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 7
-\BOOKMARK [1][-]{section*.3}{Appendix A: Guidelines for formatting Math}{}% 8
-\BOOKMARK [1][-]{section*.4}{Appendix B: Guidelines for Graphs and Tables}{}% 9
-\BOOKMARK [2][-]{subsection.Appendix.B.1}{Graphs and Images}{section*.4}% 10
-\BOOKMARK [2][-]{subsection.Appendix.B.2}{Tables}{section*.4}% 11
-\BOOKMARK [2][-]{subsection.Appendix.B.3}{Videos}{section*.4}% 12
-\BOOKMARK [1][-]{section*.7}{Appendix C: Matlab script for resizing a video}{}% 13
-\BOOKMARK [1][-]{section*.8}{Appendix D: Guideline for References}{}% 14
-\BOOKMARK [1][-]{section*.9}{References}{}% 15
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Kanade-Lucas-Tomasi Feature Tracker}{subsection.2.1}% 4
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Random Sampling and Consensus}{subsection.2.1}% 5
+\BOOKMARK [2][-]{subsection.2.2}{3D Tracking}{section.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Camera Calibration}{subsection.2.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Triangulation}{subsection.2.2}% 8
+\BOOKMARK [1][-]{section.3}{Results}{}% 9
+\BOOKMARK [1][-]{section.4}{Discussion}{}% 10
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 11
+\BOOKMARK [1][-]{section*.3}{Appendix A: Guidelines for formatting Math}{}% 12
+\BOOKMARK [1][-]{section*.4}{Appendix B: Guidelines for Graphs and Tables}{}% 13
+\BOOKMARK [2][-]{subsection.Appendix.B.1}{Graphs and Images}{section*.4}% 14
+\BOOKMARK [2][-]{subsection.Appendix.B.2}{Tables}{section*.4}% 15
+\BOOKMARK [2][-]{subsection.Appendix.B.3}{Videos}{section*.4}% 16
+\BOOKMARK [1][-]{section*.7}{Appendix C: Matlab script for resizing a video}{}% 17
+\BOOKMARK [1][-]{section*.8}{Appendix D: Guideline for References}{}% 18
+\BOOKMARK [1][-]{section*.9}{References}{}% 19

@@ -190,7 +190,7 @@
 
 % *** MATH PACKAGES ***
 %
-%\usepackage[cmex10]{amsmath}
+\usepackage[cmex10]{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics. If using
 % it, be sure to load this package with the cmex10 option to ensure that
@@ -213,7 +213,7 @@
 
 % *** SPECIALIZED LIST PACKAGES ***
 %
-%\usepackage{algorithmic}
+\usepackage{algorithmic}
 % algorithmic.sty was written by Peter Williams and Rogerio Brito.
 % This package provides an algorithmic environment fo describing algorithms.
 % You can use the algorithmic environment in-text or within a figure
@@ -572,8 +572,46 @@ To track these points we start by selecting a small ROI around these two points 
  	\label{2ROIwithPoints}
  \end{figure}
 
-\subsubsection{Kanade-Lucas-Tomasi Tracker}
-For a performance evaluation, you often need to set-up an experiment. Describe the (protocol of the) experiment. Describe how the outcome of the experiment will be processed. Often, you need reference values, i.e. a gold standard, or a ground truth. Describe how this is achieved. If the processing is done statistically, mention the statistical test or statistical inference method.
+\subsubsection{Kanade-Lucas-Tomasi Feature Tracker}
+Kanade-Lucas-Tomasi Feature Tracker, to be referred to later as KLT tracker, is a tracking method based on \cite{KL} and \cite{KLT}. Where the algorithm tries to locate a set of points $P(x,y)$ in the image ($k+1$) given its 2D coordinates in the image ($k$). This method only tracks selected points from the set $P(x,y)$ and discards the other points as untrackable. The selection is based on eigenvalues of the gradient matrix at a given point, if the two eigenvalues are larger than some threshold the point will be tracked, otherwise, it will be discarded.
+
+Therefore, it is almost guaranteed to lose all the tracked points if the tracking was done over a long series of images. So it is important to start with a large set of points $P(x,y)$ and reacquire points periodically. Also, if a large set of points is tracked and since there are large displacements at the tongue tip, some of the tracked points might be tracked incorrectly. Which makes it important to eliminate those outliers, and keep track of only the points that are within the ROI. This can be done using Random Sampling and Consensus (RANSAC).
+\subsubsection{Random Sampling and Consensus}
+RANSAC is a method of estimating parameters from an observed dataset. This dataset might contain outliers, the algorithm is capable of detecting those outliers and eliminate them so that they do not influence the estimation of the parameters. In the context of this project, RANSAC was used to detect and eliminate the outliers from the tracked dataset, and also to estimate the $(x,y)$ position of the ROIs, i.e. the reference point and tongue tip. After estimating the $(x,y)$ position of the ROIs at a given time and from two cameras in the pixel coordinates, we will be able to estimate the 3D position of these ROIs in the world coordinates using the camera parameters and triangulation.
+
+\subsection{3D Tracking}
+Estimating the $(x,y)$ positions of the ROIs in the pixel coordinates for a series of $n$ frames will provide us with the path of these ROIs along the series of $n$ frames. If we have this path (series of $(x,y)$ points for $n$ frames) for two cameras, we can estimate the 3D position of this series of points with respect to a world frame, this is done using triangulation and camera parameters that can be estimated using Camera Calibration methods.
+\subsubsection{Camera Calibration}
+To be able to transform a certain point $a_p(x,y)$ expressed in pixels coordinates to the world coordinates $a_W(x,y)$ you need to transform first from pixel coordinates to camera coordinates, then to world coordinates. The first transform is done using, what is called, Intrinsics Parameters, and the second is done using the Extrinsics Parameters.
+
+These parameters can be estimated in a process called camera calibration. In camera calbiration, the calibrator is provided with a set of pictures of a checkerboard that has squares of known side length that is also is passed to the calibrator. The calibrator will then detect the corners of the checkerboard's squares and then estimate the parameter by solving the closed-form equation that relates the pixel coordinates to the world coordinates in a pinhole camera model:
+\begin{equation} \label{CameraModel}
+w\begin{bmatrix}
+x & y & 1
+\end{bmatrix} = 
+\begin{bmatrix}
+X & Y & Z & 1
+\end{bmatrix}  
+\begin{bmatrix}
+R\\ t
+\end{bmatrix} 
+K
+\end{equation}
+Where:
+
+$(X, Y, Z)$ are the world coordinates of the point.
+
+$(x,y)$ are the pixel coordinates of the point.
+
+$w$ is the homogeneous scale factor.
+
+$K$ is the intrinsic parameters matrix.
+
+$(R,t)$ are the rotation and translation of the camera with respect to the world coordinates, i.e. extrinsics parameters.
+
+The calibrator can also estimate the lens distortion model, that can be used to undistort an image. After estimating the required parameters for the two cameras, we can estimate the $(X, Y, Z)$ of a certain ROIs in the world coordinates given a pair of matching points that represent the ROI in the two cameras. This is called Triangulation.
+\subsubsection{Triangulation}
+The two matched points $a(x_1 , y_1)$ and $b(x_2 , y_2)$, expressed in pixels coordinates of their respected cameras, together with the parameters for the two cameras can be used to estimate the $(X, Y, Z)$ of this point in the world coordinates. 
 \section{Results}
 Here, you give the results of what is described in Section II: tables, images and/or graphs. The accompanying text of these tables, images and/or graphs clarifies how they are related to the methods described in Section II.
  
@@ -777,11 +815,12 @@ In text, refer simply to the reference number. Do not use Ref.  or reference  ex
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
-\begin{thebibliography}{1}
+\begin{thebibliography}{5}
 
-\bibitem{IEEEhowto:kopka}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+ \bibitem{KL}
+  Lucas, Bruce D., and Takeo Kanade. "An iterative image registration technique with an application to stereo vision." (1981): 674.
+\bibitem{KLT}
+Tomasi, Carlo, and Takeo Kanade. "Detection and tracking of point features." (1991).
 
 \end{thebibliography}
 
