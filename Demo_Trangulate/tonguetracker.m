@@ -7,8 +7,8 @@ load stereoParams_Cam1M_L;
 load TongueandTrackerPathsFor3Cam
 
 %Create 3D path using triangulation
-path_tongue = create3DPath(PathTip_M, PathTip_L, stereoParams_Cam1M_L);
-path_tracker = create3DPath(pathTracker_M, pathTracker_L, stereoParams_Cam1M_L);
+path_tongue = create3DPath(PathTip_M, PathTip_L, stereoParams_Cam1M_L, 0);
+path_tracker = create3DPath(pathTracker_M, pathTracker_L, stereoParams_Cam1M_L, 0);
 path_relative = path_tongue - path_tracker;
 
 figure;

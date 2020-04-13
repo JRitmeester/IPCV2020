@@ -11,12 +11,12 @@ function points3d = create3DPath(path1, path2, stereoParams, showCameras)
 
     % Plot the individual 2D paths.
     figure;
-    subplot(1,2,1); scatter(path2(1:maxElement,1), path2(1:maxElement,2));
+    subplot(1,2,1); plot3(path2(1:maxElement,1), path2(1:maxElement,2), 'k.-');
     set(gca, 'YDir','reverse')
     title("Left camera path");
     xlabel('x (mm)');
     ylabel('y (mm)');
-    subplot(1,2,2); scatter(path1(1:maxElement,1), path1(1:maxElement,2));
+    subplot(1,2,2); plot3(path1(1:maxElement,1), path1(1:maxElement,2), 'k.-');
     set(gca, 'YDir','reverse')
     title("Middle camera path")
     xlabel('x (mm)');
