@@ -17,9 +17,9 @@ addpath (genpath('RANSAC Functions'))
 %% Instantiate video, and KLT object tracker
 
 % The Video name make sure that you have the video in the directory
-fname = 'Videos/subject2/proefpersoon 2_M.avi';
+fname = 'Videos/subject1/proefpersoon 1.2_M.avi';
 % Start from which second 2 & 8.4
-vidReader = VideoReader(fname,'CurrentTime',3);
+vidReader = VideoReader(fname,'CurrentTime',2);
 tracker = MultiObjectTrackerKLT; % Tracking Obj
 % Get a frame for frame-size information
 frame = readFrame(vidReader);
@@ -85,9 +85,15 @@ end
 release(videoPlayer);
 
 figure; imshow(framergb);
+title('Using Average')
 hold on
 scatter(averageX(:,2),averageY(:,2))
 scatter(averageX(:,1),averageY(:,1))
+hold off
+figure; imshow(framergb);
+title('Using RANSAC Estimator')
+hold on
+scatter(estimatedPath(:,1),estimatedPath(:,2))
 %% Functions
 
 function [frame,trackerNew,finished] = selectAgain(trackObj, VidObj)
