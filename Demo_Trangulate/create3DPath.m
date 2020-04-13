@@ -1,4 +1,4 @@
-function points3d = create3DPath(path1, path2, stereoParams)
+function points3d = create3DPath(path1, path2, stereoParams, showCameras)
     % Construct 3D path from two 2D paths.
     camera1Position = [0, 0, 0];
     camera2Position = -stereoParams.TranslationOfCamera2;
@@ -11,31 +11,37 @@ function points3d = create3DPath(path1, path2, stereoParams)
 
     % Plot the individual 2D paths.
     figure;
-    subplot(1,2,1); scatter(path1(1:maxElement,1), path1(1:maxElement,2));
+    subplot(1,2,1); scatter(path2(1:maxElement,1), path2(1:maxElement,2));
     set(gca, 'YDir','reverse')
-    title("Path 1")
-    subplot(1,2,2); scatter(path2(1:maxElement,1), path2(1:maxElement,2));
+    title("Left camera path");
+    xlabel('x (mm)');
+    ylabel('y (mm)');
+    subplot(1,2,2); scatter(path1(1:maxElement,1), path1(1:maxElement,2));
     set(gca, 'YDir','reverse')
-    title("Path 2");
-
+    title("Middle camera path")
+    xlabel('x (mm)');
+    ylabel('y (mm)');
+    
     % Plot 3D points
     figure;
-    scatter3(points3d(:,1), points3d(:,2), points3d(:,3), 'black.', 'LineWidth', 1);
+    scatter3(points3d(:,1), points3d(:,2), points3d(:,3), 'k.', 'LineWidth', 1);
     set(gca, 'YDir','reverse')
     set(gca, 'XDir','reverse')
-    title("Reconstructed 3D path");
+    title("Reconstructed 3D path of tongue");
+    if showCameras
     % Show cameras in plot
-    hold on
-    cam1 = plotCamera('Location',camera1Position,'Orientation',eye(3),...
-        'Opacity',0, 'Size', 10, 'Color', 'b');
-    cam2 = plotCamera('Location', camera2Position,...
-        'Orientation',R,'Opacity',0, 'Size', 10, 'Color', 'r');
+        hold on
+        cam1 = plotCamera('Location',camera1Position,'Orientation',eye(3),...
+           'Opacity',0, 'Size', 10, 'Color', 'b');
+        cam2 = plotCamera('Location', camera2Position,...
+           'Orientation',R,'Opacity',0, 'Size', 10, 'Color', 'r');
 
-    hold off
+        hold off
+    end
     set(gca, 'Projection', 'Perspective');
     xlabel('X (Millimeteres)')
     ylabel('Y (Millimeteres)')
     zlabel('Z (Millimeteres)')
     axis equal
-    view (180,-82)
+    
 end
