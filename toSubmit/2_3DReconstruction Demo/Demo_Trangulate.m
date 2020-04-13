@@ -1,4 +1,5 @@
 % Load Stereo Parameters and 2D paths from 3 Camers
+close all
 load("stereoParams_Cam1M_L.mat")
 load("stereoParams_Cam1M_R.mat")
 load("stereoParams_Cam1L_R.mat")
